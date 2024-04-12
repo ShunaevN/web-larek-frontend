@@ -13,7 +13,7 @@ export class Basket extends Component<IBasketView> {
     protected _list: HTMLElement;
     protected _total: HTMLElement;
     protected _button: HTMLElement;
-
+    protected _index: HTMLElement;
 
 
         constructor(container: HTMLElement, protected events: EventEmitter) {
@@ -29,10 +29,7 @@ export class Basket extends Component<IBasketView> {
                 events.emit('order:open');
             });
         }
-
-
-        this.items = [];
-        
+        this.items = [];        
     }
 
     set items(items: HTMLElement[]) {
@@ -56,6 +53,8 @@ export class Basket extends Component<IBasketView> {
     }
 
     get total()
-    {return Number(this._total.textContent.split(' ').slice(0, -1).join(''))};
+    {
+        return Number(this._total.textContent.split(' ').slice(0, -1).join(''))
+    };
    
 }

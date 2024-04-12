@@ -15,7 +15,6 @@ export class LotItem extends Model<IItem> {
     title: string;
     price: string;
     category: string;
-
 }
 
 export class AppState extends Model<IAppState> {

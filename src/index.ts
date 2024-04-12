@@ -12,7 +12,7 @@ import { Modal } from './components/common/Modal';
 import { Basket } from './components/common/Basket';
 import { Contact } from './components/Contact';
 import { Order } from './components/Order';
-import { IContactForm, IOrder, IOrderForm } from './types';
+import { IContactForm, IOrderForm } from './types';
 import { Success } from './components/common/Success';
 
 const events = new EventEmitter();
@@ -48,7 +48,7 @@ events.on('card:select', (item: LotItem) => {
 
 appData.setOrderList();
 events.on('preview:changed', (item: LotItem) => {
-        const card = new CatalogItem(cloneTemplate(cardPreviewTemplate), {
+        const card = new CatalogItem(cloneTemplate(cardPreviewTemplate), events, {
             onClick: () => {
                 if (card.buttonText === 'Купить') {
                 appData.orderList.push(item);
@@ -70,9 +70,7 @@ events.on('preview:changed', (item: LotItem) => {
                 price: item.price
                 })
             })
-
-            
-        });
+});
         
 
 events.on('modal:open', () => {
@@ -87,7 +85,7 @@ events.on('modal:close', () => {
 
 events.on<CatalogChangeEvent>('items:changed', () => {
     page.gallery = appData.catalog.map(item => {
-        const card = new CatalogItem(cloneTemplate(cardCatalogTemplate), {
+        const card = new CatalogItem(cloneTemplate(cardCatalogTemplate), events, {
             onClick: () => events.emit('card:select', item)
         });
 
@@ -102,21 +100,17 @@ events.on<CatalogChangeEvent>('items:changed', () => {
 });
 
 
-
-
 events.on('buy:item', (item: LotItem) => {
-    const card = new CatalogItem(cloneTemplate(cardBasketTemplate), {
-        onClick: () => events.emit('bids:open', item)
-    });
-                appData.orderList.forEach((item) => {
+    const card = new CatalogItem(cloneTemplate(cardBasketTemplate), events
+    , { onClick: () => events.emit('bids:open', item)}
+    );         
                 a.push(card.render({
-
                 title: item.title,
-                price: item.price
+                price: item.price,
+                index: appData.orderList.length
                     }));
-    })
-    
 });
+    
 
 
 events.on('bids:open', () => {
@@ -160,7 +154,7 @@ events.on('success:open', () => {
     appData.order.items = appData.getOrderList().map((element) => {
         return element.id
     });
-    
+    console.log(appData.order);
     
     api.orderItems(appData.order).
     then(() => {
@@ -177,7 +171,6 @@ events.on('success:open', () => {
 
 
 events.on('order:done', () => {
-    
     modal.close();
 });
 
@@ -203,6 +196,24 @@ events.on('formErrors:change', (errors: Partial<IOrderForm>) => {
 events.on(/^order\..*:change/, (data: { field: keyof IOrderForm, value: string }) => {
     appData.setContactField(data.field, data.value);
 });
+
+events.on('order:delete', (element: HTMLElement ) => {
+    appData.orderList.splice(Number(element.textContent) - 1, 1);
+    a.length = 0;
+    
+                for (let i = 0; i < appData.orderList.length; i++){
+                const card = new CatalogItem(cloneTemplate(cardBasketTemplate), events);
+                a.push(card.render({
+                title: appData.orderList[i].title,
+                price: appData.orderList[i].price,
+                index: i + 1
+                    }));
+                }
+    page.counter = appData.orderList.length;
+    events.emit('bids:open');
+});
+
+
 
 api.getItemList()
     .then(appData.setCatalog.bind(appData))

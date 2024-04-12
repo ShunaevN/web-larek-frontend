@@ -2,6 +2,7 @@ import { Component } from "./base/Component";
 import {IItem} from "../types";
 import {bem, createElement, ensureElement, formatNumber} from "../utils/utils";
 import { settingsCategory } from "../utils/constants";
+import { EventEmitter } from "./base/events";
 
 interface ICardActions {
     onClick: (event: MouseEvent) => void;
@@ -13,6 +14,7 @@ export interface ICard {
     image: string;
     category: string;
     price?: string;
+    index?: number;
 }
 
 export class Card extends Component<ICard> {
@@ -21,7 +23,9 @@ export class Card extends Component<ICard> {
     protected _description?: HTMLElement;
     protected _button?: HTMLButtonElement;
     protected _category?: HTMLElement; 
-    protected _price?: HTMLElement; 
+    protected _price?: HTMLElement;
+    protected _indexElement?: HTMLElement;
+    protected _deleteButton?: HTMLElement;
 
     constructor(protected blockName: string, container: HTMLElement, actions?: ICardActions) {
         super(container);
@@ -42,14 +46,10 @@ export class Card extends Component<ICard> {
         }
     }
 
-    
 
     set category(value: string) {
-
         this.setText(this._category, value);
     }  
-
-
 
     set price(value: string) {
         this.setText(this._price, value);
@@ -67,6 +67,13 @@ export class Card extends Component<ICard> {
         this.setImage(this._image, value, this.title)
     }
 
+    setIndexElement() {
+        this._indexElement = this.container.querySelector('.basket__item-index');
+        if (this._indexElement) {
+            this._indexElement.textContent = String(Number(this._indexElement.textContent) + 1);
+        }
+    }
+
     set description(value: string | string[]) {
         if (Array.isArray(value)) {
             this._description.replaceWith(...value.map(str => {
@@ -82,8 +89,6 @@ export class Card extends Component<ICard> {
     get buttonText(){
         return this._button.textContent;
     }
-
-    
 }
 
 
@@ -91,11 +96,18 @@ export class Card extends Component<ICard> {
 export class CatalogItem extends Card {
     protected _status: HTMLElement;
 
-    constructor(container: HTMLElement, actions?: ICardActions) {
+    constructor(container: HTMLElement, protected events: EventEmitter, actions?: ICardActions) {
         super('card', container, actions);
-        
+        this._indexElement = this.container.querySelector('.basket__item-index');
+        this._deleteButton = this.container.querySelector('.basket__item-delete');
+        if(this._deleteButton){
+            this._deleteButton.addEventListener('click', () => {
+                events.emit('order:delete', this._indexElement );
+            })
+        } 
+            
     }
-    
+ 
 
     render(data?: Partial<ICard>): HTMLElement {
         Object.assign(this as object, data ?? {});
@@ -106,13 +118,14 @@ export class CatalogItem extends Card {
         this.price = 'Бесценно';
     }
     if (data.category) {
-    this._category.classList.add(settingsCategory[data.category as keyof typeof settingsCategory]);
+        this._category.classList.add(settingsCategory[data.category as keyof typeof settingsCategory]);
     }
-    
+    if (data.index) {
+
+        this._indexElement.textContent = String(data.index);
+    }
         return this.container;
     }
-
-    
 
     
 }
