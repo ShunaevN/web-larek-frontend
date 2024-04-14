@@ -2,18 +2,18 @@ import './scss/styles.scss';
 
 import { ItemsAPI } from './components/ItemsAPI';
 import {API_URL, CDN_URL, settingsTemplates} from "./utils/constants";
-import {EventEmitter} from "./components/base/events";
+import {EventEmitter} from "./components/base/Events";
 import {cloneTemplate, ensureElement} from "./utils/utils";
 import { Page } from './components/Page';
 
 import { AppState, LotItem } from './components/AppData';
 import { CatalogItem } from './components/Card';
 import { Modal } from './components/common/Modal';
-import { Basket } from './components/common/Basket';
-import { Contact } from './components/Contact';
+import { Basket } from './components/Basket';
+import { ContactForm } from './components/Contact';
 import { Order } from './components/Order';
 import { IContactForm, IOrderForm, CatalogChangeEvent} from './types';
-import { Success } from './components/common/Success';
+import { Success } from './components/Success';
 
 const events = new EventEmitter();
 const api = new ItemsAPI(CDN_URL, API_URL);
@@ -31,15 +31,13 @@ const appData = new AppState({}, events);
 const page = new Page(document.body, events);
 const modal = new Modal(modalContainer, events)
 const basket = new Basket(cloneTemplate(basketTemplate), events);
-const contact = new Contact(cloneTemplate(contactTemplate), events);
+const contact = new ContactForm(cloneTemplate(contactTemplate), events);
 const order = new Order(cloneTemplate(orderTemplate), events);
 const success = new Success(cloneTemplate(successTemplate), events);
 
 api.getItemList()
     .then(appData.setCatalog.bind(appData))
-    .catch(err => {
-        console.error(err);
-    });
+    .catch(console.error);
 
 appData.setBasket();
 appData.setOrderList();
@@ -56,8 +54,19 @@ events.on('preview:changed', (item: LotItem) => {
                 else {
                     events.emit('basket:open', item)
                 }
-            } 
+            }
         });
+
+        if (appData.orderList.includes(item)) {
+            card.buttonText = 'Уже в корзине';
+            card.setDisabled(card.button, true);
+        }
+
+        if ( !item.price) {
+            card.buttonText = 'Нельзя купить';
+            card.setDisabled(card.button, true);
+        }
+
         modal.render({
             content: card.render({
                 title: item.title,
@@ -101,13 +110,18 @@ events.on('buy:item', (item: LotItem) => {
     
 events.on('basket:open', () => {
     basket.items = appData.basket;
+    if (appData.basket.length === 0) {
+        basket.setDisabled(basket.button, true);
+    }
+    else {
+        basket.setDisabled(basket.button, false);
+    }
     basket.total = appData.orderList.reduce((total, currentValue) => total + Number(
         currentValue.price), 0,);
     modal.render({
         content: 
         basket.render()
     });
-    
 });
 
 events.on('contacts:open', () => {
@@ -135,14 +149,15 @@ events.on('order:open', () => {
 events.on('order:delete', (element: HTMLElement ) => {
     appData.orderList.splice(Number(element.textContent) - 1, 1);
     appData.basket.length = 0;
-                for (let i = 0; i < appData.orderList.length; i++){
-                const card = new CatalogItem(cloneTemplate(cardBasketTemplate), events);
-                appData.basket.push(card.render({
-                title: appData.orderList[i].title,
-                price: appData.orderList[i].price,
-                index: i + 1
-                    }));
-                }
+    appData.orderList.forEach((item, i) => {
+        const card = new CatalogItem(cloneTemplate(cardBasketTemplate), events);
+        appData.basket.push(card.render({
+        title: item.title,
+        price: item.price,
+        index: i + 1
+            }));
+    })
+                
     page.counter = appData.orderList.length;
     events.emit('basket:open');
 });
@@ -165,9 +180,7 @@ events.on('success:open', () => {
         success.total = basket.total;
         modal.render({content: success.render({})});
     })
-    .catch(err => {
-        console.error(err);
-    });
+    .catch(console.error);
 });
 
 events.on('formErrors:change', (errors: Partial<IContactForm>) => {
@@ -189,7 +202,6 @@ events.on('formErrors:change', (errors: Partial<IOrderForm>) => {
 events.on(/^order\..*:change/, (data: { field: keyof IOrderForm, value: string }) => {
     appData.setContactField(data.field, data.value);
 });
-
 
 events.on('modal:open', () => {
     page.locked = true;

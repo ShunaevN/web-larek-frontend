@@ -1,13 +1,13 @@
-import { Component } from "../base/Component";
-import {createElement, ensureElement, formatNumber} from "../../utils/utils";
-import {EventEmitter} from "../base/events";
-import { IBasketView } from "../../types";
+import { Component } from "./base/Component";
+import {createElement, ensureElement, formatNumber} from "../utils/utils";
+import {EventEmitter} from "./base/Events";
+import { IBasketView } from "../types";
 
 
 export class Basket extends Component<IBasketView> {
     protected _list: HTMLElement;
     protected _total: HTMLElement;
-    protected _button: HTMLElement;
+    protected _button: HTMLButtonElement;
     protected _index: HTMLElement;
 
 
@@ -23,6 +23,7 @@ export class Basket extends Component<IBasketView> {
             this._button.addEventListener('click', () => {
                 events.emit('order:open');
             });
+            this.setDisabled(this._button, true);
         }
 
         this.items = [];        
@@ -39,9 +40,7 @@ export class Basket extends Component<IBasketView> {
     }
 
     setText(element: HTMLElement, value: unknown) {
-        if (element) {
-            element.textContent = String(value) + " синапсов";
-        }
+        super.setText(element, String(value) + " синапсов" )
     }
 
     set total(total: number) {
@@ -52,4 +51,10 @@ export class Basket extends Component<IBasketView> {
     {
         return Number(this._total.textContent.split(' ').slice(0, -1).join(''))
     };
+
+    get button()
+    {
+        return this._button;
+    };
+
 }

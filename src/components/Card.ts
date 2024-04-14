@@ -1,7 +1,7 @@
 import { Component } from "./base/Component";
 import { ensureElement } from "../utils/utils";
 import { settingsCategory } from "../utils/constants";
-import { EventEmitter } from "./base/events";
+import { EventEmitter } from "./base/Events";
 import { ICard, ICardActions } from "../types";
 
 
@@ -24,6 +24,7 @@ export class Card extends Component<ICard> {
         this._description = container.querySelector(`.${blockName}__text`);
         this._category = container.querySelector(`.${blockName}__category`);
         this._price = container.querySelector(`.${blockName}__price`);
+        this._indexElement = this.container.querySelector('.basket__item-index');
 
         if (actions?.onClick) {
             if (this._button) {
@@ -55,10 +56,7 @@ export class Card extends Component<ICard> {
     }
 
     setIndexElement() {
-        this._indexElement = this.container.querySelector('.basket__item-index');
-        if (this._indexElement) {
-            this._indexElement.textContent = String(Number(this._indexElement.textContent) + 1);
-        }
+        this.setText(this._indexElement, String(Number(this._indexElement.textContent) + 1))
     }
 
     set description(value: string | string[]) {
@@ -75,6 +73,10 @@ export class Card extends Component<ICard> {
 
     get buttonText(){
         return this._button.textContent;
+    }
+
+    get button(){
+        return this._button;
     }
 }
 
@@ -102,10 +104,10 @@ export class CatalogItem extends Card {
         this.price = 'Бесценно';
     }
     if (data.category) {
-        this._category.classList.add(settingsCategory[data.category as keyof typeof settingsCategory]);
+        this.toggleClass(this._category, settingsCategory[data.category as keyof typeof settingsCategory], true);
     }
     if (data.index) {
-        this._indexElement.textContent = String(data.index);
+        this.setText(this._indexElement, data.index)
     }
 
     return this.container;

@@ -1,7 +1,7 @@
-import { Component } from "../base/Component";
-import { formatNumber } from "../../utils/utils";
-import { EventEmitter } from "../base/events";
-import { ISuccess } from "../../types";
+import { Component } from "./base/Component";
+import { formatNumber } from "../utils/utils";
+import { EventEmitter } from "./base/Events";
+import { ISuccess } from "../types";
 
 
 export class Success extends Component<ISuccess> {
@@ -23,12 +23,11 @@ export class Success extends Component<ISuccess> {
     }
 
     setText(element: HTMLElement, value: unknown) {
-        if (element) {
-            element.textContent = "Списано " + String(value) + " синапсов";
-        }
+
+        super.setText(element, "Списано " + String(value) + " синапсов");
     }
 
     set total(value: number){
-        this.setText(this._total,formatNumber(value));
+        this.setText(this._total, formatNumber(value));
     }
 }

@@ -27,7 +27,6 @@ export class AppState extends Model<IAppState> {
     preview: string | null;
     formErrors: FormErrors = {};
 
-
     setCatalog(items: IItem[]) {
         this.catalog = items.map(item => new LotItem(item, this.events));
         this.emitChanges('items:changed', { catalog: this.catalog });
