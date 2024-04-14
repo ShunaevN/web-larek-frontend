@@ -1,5 +1,7 @@
 import { Model } from "./base/Model";
 import { FormErrors, IAppState, IItem, IOrder, IContactForm, IOrderForm } from "../types";
+import { mailRegex, phoneRegex } from "../utils/constants";
+import { IEvents } from "./base/Events";
 
 export class LotItem extends Model<IItem> {
     about: string;
@@ -26,6 +28,12 @@ export class AppState extends Model<IAppState> {
     };
     preview: string | null;
     formErrors: FormErrors = {};
+
+    constructor(data: Partial<IAppState>, events: IEvents) {
+        super(data, events);
+        this.setBasket();
+        this.setOrderList();
+    }
 
     setCatalog(items: IItem[]) {
         this.catalog = items.map(item => new LotItem(item, this.events));
@@ -64,10 +72,10 @@ export class AppState extends Model<IAppState> {
 
     validateOrder() {
         const errors: typeof this.formErrors = {};
-        if (!this.order.email) {
+        if (!this.order.email.match(mailRegex)) {
             errors.email = 'Необходимо указать email';
         }
-        if (!this.order.phone) {
+        if (!this.order.phone.match(phoneRegex)) {
             errors.phone = 'Необходимо указать телефон';
         }
         if (!this.order.address){

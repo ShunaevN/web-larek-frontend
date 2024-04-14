@@ -39,8 +39,7 @@ api.getItemList()
     .then(appData.setCatalog.bind(appData))
     .catch(console.error);
 
-appData.setBasket();
-appData.setOrderList();
+
 
 events.on('preview:changed', (item: LotItem) => {
         const card = new CatalogItem(cloneTemplate(cardPreviewTemplate), events, {
