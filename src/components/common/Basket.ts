@@ -1,12 +1,7 @@
 import { Component } from "../base/Component";
 import {createElement, ensureElement, formatNumber} from "../../utils/utils";
 import {EventEmitter} from "../base/events";
-
-
-interface IBasketView {
-    items: HTMLElement[];
-    total: number;
-}
+import { IBasketView } from "../../types";
 
 
 export class Basket extends Component<IBasketView> {
@@ -16,7 +11,7 @@ export class Basket extends Component<IBasketView> {
     protected _index: HTMLElement;
 
 
-        constructor(container: HTMLElement, protected events: EventEmitter) {
+    constructor(container: HTMLElement, protected events: EventEmitter) {
         super(container);
 
         this._list = ensureElement<HTMLElement>('.basket__list', this.container);
@@ -29,6 +24,7 @@ export class Basket extends Component<IBasketView> {
                 events.emit('order:open');
             });
         }
+
         this.items = [];        
     }
 
@@ -56,5 +52,4 @@ export class Basket extends Component<IBasketView> {
     {
         return Number(this._total.textContent.split(' ').slice(0, -1).join(''))
     };
-   
 }

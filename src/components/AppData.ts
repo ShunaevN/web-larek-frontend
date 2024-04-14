@@ -1,11 +1,5 @@
-import {formatNumber} from "../utils/utils";
-
-import {Model} from "./base/Model";
-import {FormErrors, IAppState, IItem, IOrder, IContactForm, IOrderForm} from "../types";
-
-export type CatalogChangeEvent = {
-    catalog: LotItem[]
-};
+import { Model } from "./base/Model";
+import { FormErrors, IAppState, IItem, IOrder, IContactForm, IOrderForm } from "../types";
 
 export class LotItem extends Model<IItem> {
     about: string;
@@ -41,7 +35,10 @@ export class AppState extends Model<IAppState> {
 
     setOrderList() {
         this.orderList = [];
-        
+    }
+
+    setBasket() {
+        this.basket = [];
     }
 
     setPreview(item: LotItem) {
@@ -66,7 +63,6 @@ export class AppState extends Model<IAppState> {
         }
     }
 
-    
     validateOrder() {
         const errors: typeof this.formErrors = {};
         if (!this.order.email) {
@@ -86,6 +82,4 @@ export class AppState extends Model<IAppState> {
     getOrderList() {
         return this.orderList;
     }
-
-    
 }

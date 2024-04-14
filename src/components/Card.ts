@@ -1,21 +1,9 @@
 import { Component } from "./base/Component";
-import {IItem} from "../types";
-import {bem, createElement, ensureElement, formatNumber} from "../utils/utils";
+import { ensureElement } from "../utils/utils";
 import { settingsCategory } from "../utils/constants";
 import { EventEmitter } from "./base/events";
+import { ICard, ICardActions } from "../types";
 
-interface ICardActions {
-    onClick: (event: MouseEvent) => void;
-}
-
-export interface ICard {
-    title: string;
-    description?: string | string[];
-    image: string;
-    category: string;
-    price?: string;
-    index?: number;
-}
 
 export class Card extends Component<ICard> {
     protected _title: HTMLElement;
@@ -45,7 +33,6 @@ export class Card extends Component<ICard> {
             }
         }
     }
-
 
     set category(value: string) {
         this.setText(this._category, value);
@@ -92,7 +79,6 @@ export class Card extends Component<ICard> {
 }
 
 
-
 export class CatalogItem extends Card {
     protected _status: HTMLElement;
 
@@ -105,10 +91,8 @@ export class CatalogItem extends Card {
                 events.emit('order:delete', this._indexElement );
             })
         } 
-            
     }
  
-
     render(data?: Partial<ICard>): HTMLElement {
         Object.assign(this as object, data ?? {});
     if (data.price) {
@@ -121,13 +105,13 @@ export class CatalogItem extends Card {
         this._category.classList.add(settingsCategory[data.category as keyof typeof settingsCategory]);
     }
     if (data.index) {
-
         this._indexElement.textContent = String(data.index);
     }
-        return this.container;
-    }
 
-    
+    return this.container;
+
+    }
+  
 }
 
 

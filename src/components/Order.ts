@@ -37,16 +37,13 @@ export class Order extends Form<IOrderForm> {
               events.emit('contacts:open');
           })
       }
-        
-
     }
 
     set address(value: string) {
         (this.container.elements.namedItem('address') as HTMLInputElement).value = value;
     }
 
-    get payment()
-    {
-      return this._payment;}
-
+    get payment() {
+      return this._payment;
+    }
 }

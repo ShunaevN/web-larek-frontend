@@ -1,19 +1,12 @@
 import { Component } from "../base/Component";
-import {ensureElement, formatNumber} from "../../utils/utils";
+import { formatNumber } from "../../utils/utils";
 import { EventEmitter } from "../base/events";
+import { ISuccess } from "../../types";
 
-interface ISuccess {
-    total: number;
-}
-
-interface ISuccessActions {
-    onClick: () => void;
-}
 
 export class Success extends Component<ISuccess> {
     protected _close: HTMLElement;
     protected _total: HTMLElement;
-
 
     constructor(container: HTMLElement, events: EventEmitter) {
         super(container);

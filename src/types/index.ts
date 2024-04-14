@@ -1,8 +1,5 @@
 import { LotItem } from "../components/AppData";
 
-declare const DEVELOPMENT: boolean;
-declare const API_ORIGIN: string;
-
 export interface IItem {
 	id: string;
     description: string;
@@ -10,6 +7,19 @@ export interface IItem {
 	title: string;
 	category: string;
     price: number;
+}
+
+export interface ISuccess {
+    total: number;
+}
+
+export interface IModalData {
+    content: HTMLElement;
+}
+
+export interface IFormState {
+    valid: boolean;
+    errors: string[];
 }
 
 export interface IContactForm {
@@ -34,6 +44,11 @@ export interface IOrderSuccess extends IOrder {
     total: number;
 }
 
+export interface IBasketView {
+    items: HTMLElement[];
+    total: number;
+}
+
 
 export interface IAppState {
     gallery: IItem[];
@@ -43,6 +58,42 @@ export interface IAppState {
     loading: boolean;
 }
 
+export interface ICardActions {
+    onClick: (event: MouseEvent) => void;
+}
+
+export interface ICard {
+    title: string;
+    description?: string | string[];
+    image: string;
+    category: string;
+    price?: string;
+    index?: number;
+}
+
+export interface IPage {
+    counter: number;
+    gallery: HTMLElement[];
+    locked: boolean;
+}
+
+export interface IItemsAPI {
+    getItemList: () => Promise<IItem[]>;
+    getItem: (id: string) => Promise<IItem>;
+    orderItems: (order: IOrder) => Promise<IOrderSuccess>;
+}
+
+
+
+export type CatalogChangeEvent = {
+    catalog: LotItem[]
+};
+
 export type FormErrors = Partial<Record<keyof IOrder, string>>;
-export type previewItem = Omit<IItem, 'description'>; // Тип для отображения товара на главной
-export type basketPreviewItem = Pick<IItem, 'title'|'price'>; // Тип для отображения товара в корзине
+
+export type ApiListResponse<Type> = {
+    total: number,
+    items: Type[]
+};
+
+export type ApiPostMethods = 'POST' | 'PUT' | 'DELETE';

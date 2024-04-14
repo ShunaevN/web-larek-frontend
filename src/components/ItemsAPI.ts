@@ -1,14 +1,10 @@
-import { Api, ApiListResponse } from "./base/api";
-import { IItem, IOrder, IOrderSuccess } from "../types";
+import { Api } from "./base/api";
+import { ApiListResponse, IItem, IItemsAPI, IOrder, IOrderSuccess } from "../types";
 
-export interface IItemsAPI {
-    getItemList: () => Promise<IItem[]>;
-    getItem: (id: string) => Promise<IItem>;
-    orderItems: (order: IOrder) => Promise<IOrderSuccess>;
-}
 
 export class ItemsAPI extends Api implements IItemsAPI {
     readonly cdn: string;
+    
     constructor(cdn: string, baseUrl: string, options?: RequestInit){
         super(baseUrl, options);
         this.cdn = cdn;
