@@ -225,22 +225,27 @@ npm run build
     
 ## Слой View (представление) представлен классами 
 
-1. ***класс Basket: class Basket extends Component \<IBasketView \>*** наследует класс Component с передачей интерфейса реализации IBasketView. Класс позволяет производить основные операции с корзиной заказов:
+1. ***класс Basket: class Basket extends Component \<IBasketView\>*** наследует класс Component с передачей интерфейса реализации IBasketView. Класс позволяет производить основные операции с корзиной заказов:
     ``` 
     // конструктор класса принимает HTML-элемент - контейнер и собития типа EventEmitter
     constructor(container: HTMLElement, protected events: EventEmitter) {}
+
     // set items - установка списка товаров
     set items(items: HTMLElement[]) {}
+
     // setText - отображение итоговой суммы товаров в синапсах
     setText(element: HTMLElement, value: unknown) {}
+
     // set total - установка итоговой цены всех товаров
     set total(total: number) {}
+
     // get total - получение итоговой цены товаров
     get total() {}
+
     // get button - получение разметки кнопки для дальнейшей блокировки\разблокировки
     get button(){}
     ```
-2. ***класс Form*** наследует класс Component с передачей интерфейса реализации IFormState.
+2. ***класс Form: class Form\<T\> extends Component\<IFormState\>*** наследует класс Component с передачей интерфейса реализации IFormState.
 Класс позволяет производить основные операции с формами:
     - в конструкторе происходит нахождение кнопки и полей формы, а также установка
     слушателей событий ввода данных в поля формы и сабмита кнопки формы с передачей соответсвующих колбеков.
