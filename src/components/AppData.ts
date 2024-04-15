@@ -17,7 +17,6 @@ export class AppState extends Model<IAppState> {
     basket: HTMLElement[];
     catalog: LotItem[];
     orderList: LotItem[];
-    loading: boolean;
     order: IOrder = {
         email: '',
         phone: '',

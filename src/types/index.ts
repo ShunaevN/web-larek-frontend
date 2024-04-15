@@ -55,7 +55,6 @@ export interface IAppState {
     basket: string[];
     preview: string | null;
     order: IOrder | null;
-    loading: boolean;
 }
 
 export interface ICardActions {
