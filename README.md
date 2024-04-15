@@ -225,7 +225,7 @@ npm run build
     
 ## Слой View (представление) представлен классами 
 
-1. ***класс Basket: class Basket extends Component \\<IBasketView \\>*** наследует класс Component с передачей интерфейса реализации IBasketView. Класс позволяет производить основные операции с корзиной заказов:
+1. ***класс Basket: class Basket extends Component \<IBasketView \>*** наследует класс Component с передачей интерфейса реализации IBasketView. Класс позволяет производить основные операции с корзиной заказов:
     ``` 
     // конструктор класса принимает HTML-элемент - контейнер и собития типа EventEmitter
     constructor(container: HTMLElement, protected events: EventEmitter) {}
