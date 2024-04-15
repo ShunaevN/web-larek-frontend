@@ -47,13 +47,11 @@ export class Basket extends Component<IBasketView> {
         this.setText(this._total, formatNumber(total));
     }
 
-    get total()
-    {
+    get total() {
         return Number(this._total.textContent.split(' ').slice(0, -1).join(''))
     };
 
-    get button()
-    {
+    get button() {
         return this._button;
     };
 
