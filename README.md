@@ -50,8 +50,7 @@ npm run build
 	title: string;
 	category: string;
     price: number;
-}
-    ```
+}```
 2. interface ISuccess - интерфейс отображения итоговой суммы успешного заказа пользователем
     - interface IModalData - интерфейс для реализации модального окна
     - interface IFormState - интерфейс формы приложения как родительского классами
