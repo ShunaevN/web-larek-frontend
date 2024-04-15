@@ -42,17 +42,18 @@ npm run build
 Ключевые интерфейсы и типы данных находятся в папке types в файле index.ts. 
 Кратко о каждом:
 1. ***interface IItem*** - интерфейс одного товара в приложении. Сформирован на основе описания запроса к бэкенду
-    '''
+    ```
+    // получение товара с сервера
     interface IItem {
-	id: string;
-    description: string;
-    image: string;
-	title: string;
-	category: string;
-    price: number; } 
-    '''
-
-2. interface ISuccess - интерфейс отображения итоговой суммы успешного заказа пользователем
+	id: string; // идентификатор товара
+    description: string; // описание товара расширенное
+    image: string; // картинка товара
+	title: string; // название товара
+	category: string; // категоря товара
+    price: number; // стоимость
+    } 
+    ```
+2. ***interface ISuccess*** - интерфейс отображения итоговой суммы успешного заказа пользователем
     - interface IModalData - интерфейс для реализации модального окна
     - interface IFormState - интерфейс формы приложения как родительского классами
     - interface IContactForm - интерфейс конкретной формы - формы с контактами пользователя
