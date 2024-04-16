@@ -167,202 +167,16 @@ npm run build
     ```
 
 ## Слой Model (модели/данных) представлен классами 
-1. ***абстрактный класс Component<T>*** задает интерфейс взаимодействия
-с опеределенным типом данных, который в него пришел в виде дженерика.
-    // конструктор класса принимает контейнер в виде HTML-элемента
-    ```
-    protected constructor(protected readonly container: HTMLElement) {}
-    ```
-    Класс представляет собой низкоуровневую обертку по взаимодействию с HTML-элементами и
-    поддерживает следующие операции
-    ```
-    // Переключение класса на элементе. Параметры: элемент, название класса, true - добавить класс, false - удалить
-    toggleClass(element: HTMLElement, className: string, force?: boolean) {}
 
-    // установка текста на элемент
-    setText(element: HTMLElement, value: unknown) {}
-
-    // Сделать элемент доступным/недоступным для взаимодействия
-    setDisabled(element: HTMLElement, state: boolean) {}
-
-    // скрыть элемент
-    setHidden(element: HTMLElement) {}
-
-    // показать элемент
-    setVisible(element: HTMLElement) {}
-
-    // установить изображение на элемент. Параметры: HTML-элемент картинка, ссылка на картинку, опционально - описание 
-    setImage(element: HTMLImageElement, src: string, alt?: string) {}
-
-    // отрисовка элемента с установкой опциональных данных 
-    render(data?: Partial<T>): HTMLElement {}
-    ```
-2. ***класс Model<T>*** задает определенный интерфейс модели данных с помощью дженериков.
+1. ***класс Model<T>*** задает определенный интерфейс модели данных с помощью дженериков.
     // конструктор класса принимает данные типа указаного в дженерике и события имплеиентирующие интерфейс IEvents
     ```
     constructor(data: Partial<T>, protected events: IEvents) {}
     ```
     Класс представляет собой низкоуровневую обертку для работы с данными. Класс используется в основе работы 
     класса AppState по управлению глобальным состояние приложения.
-
-3. ***класс ItemsAPI*** наследует класс Api и имплементирует интерфейс IItemsAPI для получения 
-и отправки списка товаров, одного товара
-    // конструктор класса принимает ссылку для получения контента сайта, ссылку для взаимодействия с REST-Api
-    // и опциональные параметры для установке в заголовке запроса
-    ```
-    constructor(cdn: string, baseUrl: string, options?: RequestInit){}
     
-    Класс предоставляет следующие методы:
-    // получение товара по идентификатору. Возвращает товар, соответсвующий интерфейсу IItem
-    getItem(id: string): Promise<IItem> {}
-
-    // получение списка товаров. Возвращает товары, соответсвующий интерфейсу IItem
-    getItemList(): Promise<IItem[]>{}
-
-    // добавление заказа, данные которого соответвуют интерфейсу IOrder. Возвращается ответ соответвующий IOrderSuccess
-    orderItems(order: IOrder): Promise<IOrderSuccess> {}
-    ```
-    
-
-## Слой View (представление) представлен классами 
-
-1. ***класс Basket: class Basket extends Component \<IBasketView\>*** наследует класс Component с передачей интерфейса реализации IBasketView. Класс позволяет производить основные операции с корзиной заказов:
-    ``` 
-    // конструктор класса принимает HTML-элемент - контейнер и собития типа EventEmitter
-    constructor(container: HTMLElement, protected events: EventEmitter) {}
-
-    // set items - установка списка товаров
-    set items(items: HTMLElement[]) {}
-
-    // setText - отображение итоговой суммы товаров в синапсах
-    setText(element: HTMLElement, value: unknown) {}
-
-    // set total - установка итоговой цены всех товаров
-    set total(total: number) {}
-
-    // get total - получение итоговой цены товаров
-    get total() {}
-
-    // get button - получение разметки кнопки для дальнейшей блокировки\разблокировки
-    get button(){}
-    ```
-2. ***класс Form: class Form\<T\> extends Component\<IFormState\>*** наследует класс Component с передачей интерфейса реализации IFormState. Класс позволяет производить основные операции с формами:
-    ```
-    // конструктор класса принимает HTML-элемент - контейнер и собития типа EventEmitter
-    constructor(protected container: HTMLFormElement, protected events: IEvents) {}
-
-    // метод onInputChange оповещает приложение об изменении данных в полях ввода формы
-    onInputChange(field: keyof T, value: string) {}
-
-    // set valid устанавливает валидность формы путем активации кнопки формы
-    valid(value: boolean) {}
-
-    // set errors  отображение ошибок на форме при вводе значений в поля формы
-    set errors(value: string) {}
-
-    // render переопределяет родительский метод render у Component и рендерит форму с соответвующим состоянием 
-    render(state: Partial<T> & IFormState) {}
-    ```
-
-3. ***класс Modal: class Modal extends Component\<IModalData\>*** наследует класс Component с передачей интерфейса реализации IModalData. Класс позволяет производить основные операции с модальными окнами:
-    ```
-    // В конструкторе модального окна происходит поиск элементов модального окна (закрытие, контент, сабмит), а также установки слушателя на кнопку
-    constructor(container: HTMLElement, protected events: IEvents) {}
-
-    // метод set content позволяет отобразить в модальном окне желаемый контент, таким образом мы можем создать один экземпляр модального окна и постоянно менять в нем контент
-    set content(value: HTMLElement) {}
-
-    // методы open и close позволяют скрывать и показывать модальное окно через передачу сообщений с помошбю eventEmmiter
-    open() {}
-    close() {}
-
-    // render переопределяет родительский метод render у Component и рендерит модальное окно с соответвующим контентом
-    render(data: IModalData): HTMLElement {}
-    ```
-
-4. ***класс Success: class Success extends Component\<ISuccess\>*** наследует класс Component с передачей интерфейса реализации ISuccess. Класс позволяет сформировать показ итогового окна с успешно оплаченным заказом:
-    ```
-    // конструктор класса принимает HTML-элемент - контейнер и собития типа EventEmitter
-    constructor(protected container: HTMLFormElement, protected events: IEvents) {}
-
-    // set total - сеттер который устанавливает итоговую цену оплаченного заказа
-    set total(value: number){}
-
-    // setText - приводит итоговое сообщение об успешно оплаченном заказе в соответвующий вид в синапсах
-    setText(element: HTMLElement, value: unknown) {}
-    ```
-
-5. ***класс Contacts: class ContactForm extends Form\<IContactForm\>*** наследует класс Form с передачей интерфейса реализации IContactForm. Класс позволяет работать с формой контактов пользователя:
-    ```
-    // конструктор класса принимает HTML-элемент - контейнер и собития типа EventEmitter
-    constructor(protected container: HTMLFormElement, protected events: IEvents) {}
-
-    // set phone - сеттер установки значения телефона
-    set phone(value: string) {}
-
-    // set email - сеттер установки значения почты
-    set email(value: string) {}
-    ```
-
-6. ***класс Order: class Order extends Form\<IOrderForm\>*** наследует класс Form с передачей интерфейса реализации IOrderForm. Класс позволяет работать с формой заказа товаров:
-    ```
-    // конструктор класса принимает HTML-элемент - контейнер и собития типа EventEmitter
-    constructor(protected container: HTMLFormElement, protected events: IEvents) {}
-
-    // set address - сеттер установки адреса доставки
-    set address(value: string) {}
-
-    // get payment - геттер вида платежа. Сам вид платежа устанавливается в конструкторе в зависимости от выбранного Таба
-    get payment() {}
-    ```
-
-7. ***класс Page: class Page extends Component\<IPage\>*** наследует класс Component с передачей интерфейса реализации IPage. Класс позволяет производить основные операции с главной страницей:
-    ```
-    // конструктор класса принимает HTML-элемент - контейнер и собития типа EventEmitter
-    constructor(protected container: HTMLFormElement, protected events: IEvents) {}
-
-    // set counter - сеттер счетчика корзины
-    set counter(value: number) {}
-
-    // set gallery - сеттер для установки первоначального отображения списка доступных к покупке товаров
-    set gallery(items: HTMLElement[]) {}
-
-    // set locked - сеттер блокировки/разблокировки прокрутки страницы. Изменяется при открытии и закрытии модальных окон.
-    set locked(value: boolean) {}
-    ```
-
-8. ***класс Card: class Card extends Component\<ICard\>*** наследует класс Component с передачей интерфейса реализации ICard. Класс позволяет производить основные операции с карточками товаров. Некоторые поля сделаны опцинальными, так как в зависимости от состояния экрана, в карточке товара могут не отображаться некоторые параметры, например категория или описание:
-    ```
-    // консруктор производит поиск элементов через утилиту ensureElement, поэтому в коструктор помимо контейнера
-    мы передаем и blockName для поиска элементов именованным по БЭМ
-    constructor(protected blockName: string, container: HTMLElement, actions?: ICardActions) {}
-
-    // группа сеттеров set category, set price, set title, set buttonText, set image, set description - сеттеры по установки соответвующих атрибутов карточки, значения которых приходят с сервера
-    set category(value: string) {}  
-    set price(value: string) {}
-    set title(value: string) {}
-    set buttonText(value: string) {}
-    set image(value: string) {}
-    set description(value: string | string[]) {}
-
-    // get buttonText  и get button() - геттеры получения текста на кнопке и самого элемента кнопки
-    get buttonText() {}
-    get button() {}
-
-    // setIndexElement - метод для установки номера позиции карточки в корзине товаров.
-    setIndexElement() {}
-    ```
-
-9. ***Класс CatalogItem: class CatalogItem extends Card*** наследуется от класса Card. Класс отвечается за отображения карточки на различных модальных окнах в приложении: начальный экран приложения, превью, корзина. За эту функциональность отвечает метод render().
-    ```
-    // конструктор класса принимает HTML-элемент - контейнер, собития типа EventEmitter и опциональный набор действий с карточкой типа ICardActions
-    constructor(container: HTMLElement, protected events: EventEmitter, actions?: ICardActions) {}
-
-    // render переопределяет родительский метод render у Component и рендерит карточку с соответвующим набором атрибутов по шаблону 
-    render(data?: Partial<ICard>): HTMLElement {}
-    ```
-
-10. ***Класс AppState из файла AppData.ts: class AppState extends Model\<IAppState\>*** наследует класс Model с передачей интерфейса IAppState. Класс отвечает за глобальные состояния нашего приложения - состояния каталога товаров, списка заказов, списка товаров в корзине и ее отображение, карточки на превью и т.п.
+2. ***Класс AppState из файла AppData.ts: class AppState extends Model\<IAppState\>*** наследует класс Model с передачей интерфейса IAppState. Класс отвечает за глобальные состояния нашего приложения - состояния каталога товаров, списка заказов, списка товаров в корзине и ее отображение, карточки на превью и т.п.
     ```
     // В конструктор класса вынесена первоначальная инициализация массивов с заказами и товарами в корзине
     constructor(data: Partial<IAppState>, events: IEvents) {
@@ -393,6 +207,176 @@ npm run build
     // getOrderList - геттер получения товаров для заказа
     getOrderList() {}
     ```
+
+## Слой View (представление) представлен классами
+
+1. ***абстрактный класс Component<T>*** задает интерфейс взаимодействия
+с опеределенным типом данных, который в него пришел в виде дженерика.
+    // конструктор класса принимает контейнер в виде HTML-элемента
+    ```
+    protected constructor(protected readonly container: HTMLElement) {}
+    ```
+    Класс представляет собой низкоуровневую обертку по взаимодействию с HTML-элементами и
+    поддерживает следующие операции
+    ```
+    // Переключение класса на элементе. Параметры: элемент, название класса, true - добавить класс, false - удалить
+    toggleClass(element: HTMLElement, className: string, force?: boolean) {}
+
+    // установка текста на элемент
+    setText(element: HTMLElement, value: unknown) {}
+
+    // Сделать элемент доступным/недоступным для взаимодействия
+    setDisabled(element: HTMLElement, state: boolean) {}
+
+    // скрыть элемент
+    setHidden(element: HTMLElement) {}
+
+    // показать элемент
+    setVisible(element: HTMLElement) {}
+
+    // установить изображение на элемент. Параметры: HTML-элемент картинка, ссылка на картинку, опционально - описание 
+    setImage(element: HTMLImageElement, src: string, alt?: string) {}
+
+    // отрисовка элемента с установкой опциональных данных 
+    render(data?: Partial<T>): HTMLElement {}
+    ```
+
+2. ***класс Basket: class Basket extends Component \<IBasketView\>*** наследует класс Component с передачей интерфейса реализации IBasketView. Класс позволяет производить основные операции с корзиной заказов:
+    ``` 
+    // конструктор класса принимает HTML-элемент - контейнер и собития типа EventEmitter
+    constructor(container: HTMLElement, protected events: EventEmitter) {}
+
+    // set items - установка списка товаров
+    set items(items: HTMLElement[]) {}
+
+    // setText - отображение итоговой суммы товаров в синапсах
+    setText(element: HTMLElement, value: unknown) {}
+
+    // set total - установка итоговой цены всех товаров
+    set total(total: number) {}
+
+    // get total - получение итоговой цены товаров
+    get total() {}
+
+    // get button - получение разметки кнопки для дальнейшей блокировки\разблокировки
+    get button(){}
+    ```
+3. ***класс Form: class Form\<T\> extends Component\<IFormState\>*** наследует класс Component с передачей интерфейса реализации IFormState. Класс позволяет производить основные операции с формами:
+    ```
+    // конструктор класса принимает HTML-элемент - контейнер и собития типа EventEmitter
+    constructor(protected container: HTMLFormElement, protected events: IEvents) {}
+
+    // метод onInputChange оповещает приложение об изменении данных в полях ввода формы
+    onInputChange(field: keyof T, value: string) {}
+
+    // set valid устанавливает валидность формы путем активации кнопки формы
+    valid(value: boolean) {}
+
+    // set errors  отображение ошибок на форме при вводе значений в поля формы
+    set errors(value: string) {}
+
+    // render переопределяет родительский метод render у Component и рендерит форму с соответвующим состоянием 
+    render(state: Partial<T> & IFormState) {}
+    ```
+
+4. ***класс Modal: class Modal extends Component\<IModalData\>*** наследует класс Component с передачей интерфейса реализации IModalData. Класс позволяет производить основные операции с модальными окнами:
+    ```
+    // В конструкторе модального окна происходит поиск элементов модального окна (закрытие, контент, сабмит), а также установки слушателя на кнопку
+    constructor(container: HTMLElement, protected events: IEvents) {}
+
+    // метод set content позволяет отобразить в модальном окне желаемый контент, таким образом мы можем создать один экземпляр модального окна и постоянно менять в нем контент
+    set content(value: HTMLElement) {}
+
+    // методы open и close позволяют скрывать и показывать модальное окно через передачу сообщений с помошбю eventEmmiter
+    open() {}
+    close() {}
+
+    // render переопределяет родительский метод render у Component и рендерит модальное окно с соответвующим контентом
+    render(data: IModalData): HTMLElement {}
+    ```
+
+5. ***класс Success: class Success extends Component\<ISuccess\>*** наследует класс Component с передачей интерфейса реализации ISuccess. Класс позволяет сформировать показ итогового окна с успешно оплаченным заказом:
+    ```
+    // конструктор класса принимает HTML-элемент - контейнер и собития типа EventEmitter
+    constructor(protected container: HTMLFormElement, protected events: IEvents) {}
+
+    // set total - сеттер который устанавливает итоговую цену оплаченного заказа
+    set total(value: number){}
+
+    // setText - приводит итоговое сообщение об успешно оплаченном заказе в соответвующий вид в синапсах
+    setText(element: HTMLElement, value: unknown) {}
+    ```
+
+6. ***класс Contacts: class ContactForm extends Form\<IContactForm\>*** наследует класс Form с передачей интерфейса реализации IContactForm. Класс позволяет работать с формой контактов пользователя:
+    ```
+    // конструктор класса принимает HTML-элемент - контейнер и собития типа EventEmitter
+    constructor(protected container: HTMLFormElement, protected events: IEvents) {}
+
+    // set phone - сеттер установки значения телефона
+    set phone(value: string) {}
+
+    // set email - сеттер установки значения почты
+    set email(value: string) {}
+    ```
+
+7. ***класс Order: class Order extends Form\<IOrderForm\>*** наследует класс Form с передачей интерфейса реализации IOrderForm. Класс позволяет работать с формой заказа товаров:
+    ```
+    // конструктор класса принимает HTML-элемент - контейнер и собития типа EventEmitter
+    constructor(protected container: HTMLFormElement, protected events: IEvents) {}
+
+    // set address - сеттер установки адреса доставки
+    set address(value: string) {}
+
+    // get payment - геттер вида платежа. Сам вид платежа устанавливается в конструкторе в зависимости от выбранного Таба
+    get payment() {}
+    ```
+
+8. ***класс Page: class Page extends Component\<IPage\>*** наследует класс Component с передачей интерфейса реализации IPage. Класс позволяет производить основные операции с главной страницей:
+    ```
+    // конструктор класса принимает HTML-элемент - контейнер и собития типа EventEmitter
+    constructor(protected container: HTMLFormElement, protected events: IEvents) {}
+
+    // set counter - сеттер счетчика корзины
+    set counter(value: number) {}
+
+    // set gallery - сеттер для установки первоначального отображения списка доступных к покупке товаров
+    set gallery(items: HTMLElement[]) {}
+
+    // set locked - сеттер блокировки/разблокировки прокрутки страницы. Изменяется при открытии и закрытии модальных окон.
+    set locked(value: boolean) {}
+    ```
+
+9. ***класс Card: class Card extends Component\<ICard\>*** наследует класс Component с передачей интерфейса реализации ICard. Класс позволяет производить основные операции с карточками товаров. Некоторые поля сделаны опцинальными, так как в зависимости от состояния экрана, в карточке товара могут не отображаться некоторые параметры, например категория или описание:
+    ```
+    // консруктор производит поиск элементов через утилиту ensureElement, поэтому в коструктор помимо контейнера
+    мы передаем и blockName для поиска элементов именованным по БЭМ
+    constructor(protected blockName: string, container: HTMLElement, actions?: ICardActions) {}
+
+    // группа сеттеров set category, set price, set title, set buttonText, set image, set description - сеттеры по установки соответвующих атрибутов карточки, значения которых приходят с сервера
+    set category(value: string) {}  
+    set price(value: string) {}
+    set title(value: string) {}
+    set buttonText(value: string) {}
+    set image(value: string) {}
+    set description(value: string | string[]) {}
+
+    // get buttonText  и get button() - геттеры получения текста на кнопке и самого элемента кнопки
+    get buttonText() {}
+    get button() {}
+
+    // setIndexElement - метод для установки номера позиции карточки в корзине товаров.
+    setIndexElement() {}
+    ```
+
+10. ***Класс CatalogItem: class CatalogItem extends Card*** наследуется от класса Card. Класс отвечается за отображения карточки на различных модальных окнах в приложении: начальный экран приложения, превью, корзина. За эту функциональность отвечает метод render().
+    ```
+    // конструктор класса принимает HTML-элемент - контейнер, собития типа EventEmitter и опциональный набор действий с карточкой типа ICardActions
+    constructor(container: HTMLElement, protected events: EventEmitter, actions?: ICardActions) {}
+
+    // render переопределяет родительский метод render у Component и рендерит карточку с соответвующим набором атрибутов по шаблону 
+    render(data?: Partial<ICard>): HTMLElement {}
+    ```
+
 
 ## Слой Presenter (управление/связывание данных и представления) представлен классами 
 1. ***класс EventEmitter*** имплементирует интерфейс IEvents и позволяет работать с событиями в нашем приложении.
@@ -427,3 +411,23 @@ npm run build
     
     
 2. ***файл index.ts в папке src  точка сборки приложения***. Именно там происходит подключение всех модулей, поиск шаблонов разметки, создание экземпляров классов моделей и представление, запрос к бэкенду для получение данных и реализация логики событий EventEmitter
+
+## ***Связь с сервером*** осуществляется с помошью класса ItemsAPI
+
+- ***класс ItemsAPI*** наследует класс Api и имплементирует интерфейс IItemsAPI для получения 
+и отправки списка товаров, одного товара
+    // конструктор класса принимает ссылку для получения контента сайта, ссылку для взаимодействия с REST-Api
+    // и опциональные параметры для установке в заголовке запроса
+    ```
+    constructor(cdn: string, baseUrl: string, options?: RequestInit){}
+    
+    Класс предоставляет следующие методы:
+    // получение товара по идентификатору. Возвращает товар, соответсвующий интерфейсу IItem
+    getItem(id: string): Promise<IItem> {}
+
+    // получение списка товаров. Возвращает товары, соответсвующий интерфейсу IItem
+    getItemList(): Promise<IItem[]>{}
+
+    // добавление заказа, данные которого соответвуют интерфейсу IOrder. Возвращается ответ соответвующий IOrderSuccess
+    orderItems(order: IOrder): Promise<IOrderSuccess> {}
+    ```
